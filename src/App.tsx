@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './index.css'; 
+import './index.css';
 
 interface Order {
   id: number;
@@ -32,12 +32,12 @@ function App() {
     try {
       const response = await axios.post('http://localhost:8080/orders', {
         drinkName,
-        size
+        size,
       });
       setMessage(response.data.accepted ? 'Orden aceptada' : 'Orden no aceptada');
       fetchOrders();
     } catch (error) {
-      setMessage('Error al crear la orden');
+      setMessage('Error al crear la orden, puede que hayas escrito mal o no hay ese tamaño');
       console.error('Error creating order', error);
     }
   };
@@ -47,44 +47,52 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="p-8 max-w-2xl w-full bg-white bg-opacity-80 rounded-2xl shadow-2xl">
-        <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Gestión de Órdenes</h1>
+    <div className="container">
+      <div className="panel">
+        <h1 className="title">Gestión de Órdenes</h1>
 
-        <div className="mb-6 p-4 border rounded-lg shadow bg-white bg-opacity-90 ">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Nueva Orden</h2>
-          <input
-            type="text"
-            placeholder="Nombre de la bebida"
-            value={drinkName}
-            onChange={(e) => setDrinkName(e.target.value)}
-            className="border p-2 w-full mb-2 rounded"
-          />
-          <select
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
-            className="border rounded p-2 w-full mb-4"
-          >
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
-          </select>
-          <button
-            onClick={createOrder}
-            className="w-full bg-amber-700 text-white p-2 rounded hover:bg-amber-800 transition"
-          >
+        <div className="section">
+          <h2>Nueva Orden</h2>
+          <div>
+            <label className="label" htmlFor="drinkName">Nombre de la bebida</label>
+            <input
+              id="drinkName"
+              type="text"
+              placeholder="Ej: Latte, Té Verde..."
+              value={drinkName}
+              onChange={(e) => setDrinkName(e.target.value)}
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="label" htmlFor="size">Tamaño</label>
+            <select
+              id="size"
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              className="select"
+            >
+              <option value="small">Pequeño</option>
+              <option value="medium">Mediano</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+          <button onClick={createOrder} className="button">
             Crear Orden
           </button>
-          {message && <p className="mt-4 text-center font-medium text-amber-900">{message}</p>}
+          {message && <p className="message">{message}</p>}
         </div>
 
-        <h2 className="text-2xl font-semibold mb-4 text-gray-700">Órdenes Existentes</h2>
-        {orders.map((order) => (
-          <div key={order.id} className="mb-3 p-4 border rounded-lg shadow bg-white bg-opacity-90">
-            <p><strong>Bebida:</strong> {order.drinkName}</p>
-            <p><strong>Tamaño:</strong> {order.size}</p>
-          </div>
-        ))}
+        <h2 className="section-title">Órdenes Existentes</h2>
+        <div className="order-list">
+          {orders.length === 0 && <p className="message">No hay órdenes registradas aún.</p>}
+          {orders.map((order) => (
+            <div key={order.id} className="order-card">
+              <p><strong>Bebida:</strong> {order.drinkName}</p>
+              <p><strong>Tamaño:</strong> {order.size}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
